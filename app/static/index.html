@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Stroke Prediction Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2em auto;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75em;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px;
+            font-size: 1em;
+        }
+
+        button {
+            margin-top: 1em;
+            padding: 0.6em;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 1em;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Stroke Prediction</h1>
+    <form id="predict-form">
+        <label>Gender
+            <select id="gender">
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+        </label>
+
+        <label>Age <input id="age" type="number" min="0" max="120" step="0.1" required></label>
+        <label>Ever Married
+            <select id="ever_married">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+        </label>
+
+        <label>Work Type
+            <select id="work_type">
+                <option>Private</option>
+                <option>Self-employed</option>
+                <option>Govt_job</option>
+                <option>children</option>
+                <option>Never_worked</option>
+            </select>
+        </label>
+
+        <label>Residence Type
+            <select id="Residence_type">
+                <option>Urban</option>
+                <option>Rural</option>
+            </select>
+        </label>
+
+        <label>Average Glucose Level <input id="avg_glucose_level" type="number" step="0.1" required></label>
+        <label>BMI <input id="bmi" type="number" step="0.1" required></label>
+
+        <label>Smoking Status
+            <select id="smoking_status">
+                <option>formerly smoked</option>
+                <option>never smoked</option>
+                <option>smokes</option>
+            </select>
+        </label>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById("predict-form");
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const payload = {
+                gender: document.getElementById("gender").value,
+                age: parseFloat(document.getElementById("age").value),
+                ever_married: document.getElementById("ever_married").value,
+                work_type: document.getElementById("work_type").value,
+                Residence_type: document.getElementById("Residence_type").value,
+                avg_glucose_level: parseFloat(document.getElementById("avg_glucose_level").value),
+                bmi: parseFloat(document.getElementById("bmi").value),
+                smoking_status: document.getElementById("smoking_status").value,
+            };
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = "Predicting...";
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const pct = (data.stroke_probability * 100).toFixed(1);
+                    resultDiv.textContent = `Predicted stroke probability: ${pct}%`;
+                } else {
+                    resultDiv.textContent = `Error: ${data.detail}`;
+                }
+            } catch (err) {
+                resultDiv.textContent = "Error connecting to API.";
+            }
+        });
+    </script>
+</body>
+
+</html>
