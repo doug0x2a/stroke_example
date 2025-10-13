@@ -4,14 +4,14 @@ import joblib
 import pandas as pd
 from typing import Any, Dict
 from pathlib import Path
+from sklearn.pipeline import Pipeline
 
 
 # ---------------------------------------------------------------------
 # Load model once when the module is imported (startup)
 # ---------------------------------------------------------------------
 
-MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "log_reg_model.joblib"
-model = joblib.load(MODEL_PATH)
+LINEAR_REGRESSION_MODEL = joblib.load("models/log_reg_model.joblib")
 
 # ---------------------------------------------------------------------
 # Validation
@@ -66,7 +66,7 @@ def validate_payload(payload: Dict[str, Any]) -> None:
 # Prediction
 # ---------------------------------------------------------------------
 
-def get_stroke_prob(payload: Dict[str, Any]) -> float:
+def get_stroke_prob(model: Pipeline, payload: Dict[str, Any]) -> float:
     """Validate input and return stroke probability."""
     validate_payload(payload)
 
@@ -81,18 +81,18 @@ app = FastAPI(title="Stroke Predictor")
 
 
 @app.get("/", response_class=HTMLResponse)
-async def home():
+def home():
     with open("app/static/index.html") as f:
         return f.read()
 
 @app.get("/ping")
-async def ping():
+def ping():
     return {"status": "ok"}
 
 @app.post("/predict")
-async def predict(payload: Dict[str, Any]):
+def predict(payload: Dict[str, Any]):
     try:
-        p = get_stroke_prob(payload)
+        p = get_stroke_prob(LINEAR_REGRESSION_MODEL, payload)
         return {"stroke_probability": p}
     except ValueError as ve:
         # Validation errors -> 400
