@@ -30,7 +30,9 @@ def validate_payload(payload: Dict[str, Any]) -> None:
         "Residence_type": ["Urban", "Rural"],
         "avg_glucose_level": (0, 400),
         "bmi": (10, 100),
-        "smoking_status": ["formerly smoked", "never smoked", "smokes"]
+        "smoking_status": ["formerly smoked", "never smoked", "smokes"],
+        "hypertension": [0,1],
+        "heart_disease": [0,1],
     }
 
     # check for missing keys

@@ -99,6 +99,20 @@
             </select>
         </label>
 
+        <label>Hypertension
+            <select id="hypertension">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+        </label>
+
+        <label>Heart Disease
+            <select id="heart_disease">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+        </label>
+
         <button type="submit">Predict</button>
     </form>
 
@@ -109,6 +123,9 @@
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
 
+            // Helper to convert "Yes"/"No" → 1/0
+            const ynToInt = (val) => (val === "Yes" ? 1 : 0);
+
             const payload = {
                 gender: document.getElementById("gender").value,
                 age: parseFloat(document.getElementById("age").value),
@@ -118,6 +135,8 @@
                 avg_glucose_level: parseFloat(document.getElementById("avg_glucose_level").value),
                 bmi: parseFloat(document.getElementById("bmi").value),
                 smoking_status: document.getElementById("smoking_status").value,
+                hypertension: ynToInt(document.getElementById("hypertension").value),
+                heart_disease: ynToInt(document.getElementById("heart_disease").value),
             };
 
             const resultDiv = document.getElementById("result");
